@@ -1,5 +1,4 @@
 import './App.css';
-import Button from '@mui/material/Button';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -8,6 +7,7 @@ import {useState} from "react";
 import {useMemo} from "react";
 
 function findNextPrimeAgeYear(startingYear) {
+    if (!startingYear) return "Please choose a valid birth year";
     const primeList = findPrimeNumbers(120);
     for (let prime of primeList) {
         const nextPrimeAgeYear = startingYear + prime;
@@ -15,7 +15,7 @@ function findNextPrimeAgeYear(startingYear) {
             return "In year " + nextPrimeAgeYear + ", you will have a prime age of " + prime;
         }
     }
-    return "Out of Rangee";
+    return "Out of Range";
 }
 
 function findPrimeNumbers(upperLimit) {
@@ -36,11 +36,17 @@ function findPrimeNumbers(upperLimit) {
 }
 
 function YearPicker({setBirthYear}) {
+    const maxYear = dayjs();
+    const minYear = dayjs().subtract(99, 'year');
+
     const [error, setError] = useState(null);
 
     const errorMessage = useMemo(() => {
         switch (error) {
-            case 'maxDate': {return 'You are not born yet...?'}
+            case 'maxDate': {
+                return 'You are not born yet...?';
+            }
+
             case 'minDate': {
                 return 'Are you sure you are this old?';
             }
@@ -55,32 +61,36 @@ function YearPicker({setBirthYear}) {
         }
     }, [error]);
 
+
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker label="Choose Birth Year" views={['year']}
-                        defaultValue={dayjs()}
-                        minDate={dayjs().subtract(99, 'year')}
-                        maxDate={dayjs()}
-                        onError={(newError) => setError(newError)}
+                        minDate={minYear}
+                        maxDate={maxYear}
+                        onError={(newError) => {
+                            setError(newError);
+                        }}
                         slotProps={{
                             textField: {
                                 helperText: errorMessage,
                             },
                         }}
-                        onChange={(value) => value ? setBirthYear(value.year()) : null}/>
+                        onChange={(value) =>
+                            setBirthYear(
+                                (value.year() >= (minYear.year()) &&
+                                (value.year() <= (maxYear.year()))) ? value.year() : null)}/>
         </LocalizationProvider>
     );
 }
 
 function App() {
-    const [birthYear, setBirthYear] = useState(dayjs().year());
     const [result, setResult] = useState("");
     return (
     <div className="App">
       <header className="App-header">
         <h2>Prime Age Calculator</h2>
-        <YearPicker birthYear={birthYear} setBirthYear={setBirthYear}/>
-        <Button onClick={() => setResult(findNextPrimeAgeYear(birthYear))}>Calculate</Button>
+        <YearPicker setBirthYear={(birthYear) => setResult(findNextPrimeAgeYear(birthYear))}/>
+        <br />
         <h3 className={'selectedYear'}>{result}</h3>
       </header>
     </div>
