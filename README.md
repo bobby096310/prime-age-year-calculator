@@ -23,4 +23,4 @@ You may also see any lint errors in the console.
 
 ## Input Validation
 
-The year selector only shows 1924 - 2023, if the user tries to type outside of this range, error message will be diesplayed.
+The year selector only shows 1924 - 2023, if the user tries to type outside of this range, error message will be displayed.
