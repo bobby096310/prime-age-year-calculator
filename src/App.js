@@ -10,7 +10,7 @@ function findNextPrimeAgeYear(startingYear) {
     const primeList = findPrimeNumbers();
     for (let prime of primeList) {
         const nextPrimeAgeYear = startingYear + prime;
-        if (nextPrimeAgeYear >= dayjs().year()) {
+        if (nextPrimeAgeYear > dayjs().year()) {
             return "In year " + nextPrimeAgeYear + ", you will have a prime age of " + prime;
         }
     }
@@ -34,15 +34,14 @@ function findPrimeNumbers() {
     return primeList;
 }
 
-function YearPicker({birthYear, setBirthYear}) {
+function YearPicker({setBirthYear}) {
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker label="Choose Birth Year" views={['year']}
-                        disableFuture
+                        defaultValue={dayjs()}
                         minDate={dayjs().subtract(99, 'year')}
                         maxDate={dayjs()}
-                        onYearChange={(value) => setBirthYear(value.year())}/>
-            <h3 className={'selectedYear'}>{birthYear}</h3>
+                        onChange={(value) => value ? setBirthYear(value.year()) : null}/>
         </LocalizationProvider>
     );
 }
@@ -53,8 +52,9 @@ function App() {
     return (
     <div className="App">
       <header className="App-header">
-        <p><YearPicker birthYear={birthYear} setBirthYear={setBirthYear}/></p>
-        <p><Button onClick={() => setResult(findNextPrimeAgeYear(birthYear))}>Calculate</Button></p>
+        <h2>Prime Age Calculator</h2>
+        <YearPicker birthYear={birthYear} setBirthYear={setBirthYear}/>
+        <Button onClick={() => setResult(findNextPrimeAgeYear(birthYear))}>Calculate</Button>
         <h3 className={'selectedYear'}>{result}</h3>
       </header>
     </div>
