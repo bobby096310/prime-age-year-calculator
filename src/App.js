@@ -77,8 +77,8 @@ function YearPicker({setBirthYear}) {
                         }}
                         onChange={(value) =>
                             setBirthYear(
-                                (value.year() >= (minYear.year()) &&
-                                (value.year() <= (maxYear.year()))) ? value.year() : null)}/>
+                                (value?.year() >= (minYear.year()) &&
+                                (value?.year() <= (maxYear.year()))) ? value.year() : null)}/>
         </LocalizationProvider>
     );
 }
